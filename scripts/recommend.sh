@@ -48,10 +48,36 @@ if [[ -z "$crop" ]]; then
   exit 1
 fi
 
+# -------- Weather with fallback chain --------
+weather=""
+
+# Primary: wttr.in (very simple human-readable)
 weather_url="https://wttr.in/${location}?format=3"
 weather="$(curl -fsSL --max-time 12 "$weather_url" || true)"
+
+# Fallback: Open-Meteo geocoding + daily forecast (no API key)
 if [[ -z "$weather" ]]; then
-  weather="Weather unavailable (wttr.in request failed)."
+  encoded_location="$(LOC="$location" python3 -c 'import os,urllib.parse; print(urllib.parse.quote(os.environ["LOC"]))')"
+  geocode_json="$(curl -fsSL --max-time 12 "https://geocoding-api.open-meteo.com/v1/search?name=${encoded_location}&count=1&language=en&format=json" || true)"
+
+  if [[ -n "$geocode_json" ]] && echo "$geocode_json" | jq -e '.results[0]' >/dev/null 2>&1; then
+    lat="$(echo "$geocode_json" | jq -r '.results[0].latitude')"
+    lon="$(echo "$geocode_json" | jq -r '.results[0].longitude')"
+    place="$(echo "$geocode_json" | jq -r '.results[0].name')"
+
+    forecast_json="$(curl -fsSL --max-time 12 "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=auto" || true)"
+
+    if [[ -n "$forecast_json" ]] && echo "$forecast_json" | jq -e '.daily' >/dev/null 2>&1; then
+      tmax="$(echo "$forecast_json" | jq -r '.daily.temperature_2m_max[0] // "n/a"')"
+      tmin="$(echo "$forecast_json" | jq -r '.daily.temperature_2m_min[0] // "n/a"')"
+      rainp="$(echo "$forecast_json" | jq -r '.daily.precipitation_probability_max[0] // "n/a"')"
+      weather="${place}: ${tmin}–${tmax}°C, rain chance ${rainp}% (Open-Meteo)."
+    fi
+  fi
+fi
+
+if [[ -z "$weather" ]]; then
+  weather="Weather unavailable (wttr.in and Open-Meteo failed)."
 fi
 
 price_lines=()
@@ -125,7 +151,7 @@ echo "Prices:"
 printf '%s
 ' "${price_lines[@]}"
 echo ""
-echo "Practical Hints:"
-echo "- If rain is likely, prioritize drainage and disease checks."
+echo "Action:"
+echo "- If rain risk is high, prioritize drainage and disease checks."
 echo "- If hot/dry, review irrigation schedule and mulch cover."
-echo "- Compare today price with your local buyer before harvest sale."
+echo "- Compare benchmark price with local buyer quote before sale."
