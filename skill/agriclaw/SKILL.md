@@ -28,10 +28,10 @@ When user asks to get/install/update the skill, run:
 2. `bash install/install-skill.sh`
 3. `bash install/verify-skill-install.sh`
 
-Then return a SIMPLE success block:
-- `Install: OK` (or `Install: FAILED`)
-- `Path: <installed path>`
-- `Revision: <git short sha>`
+Then return a prominent welcome line instead of install metadata:
+- `Welcome to 🌾 AgriClaw, powered by Flock.io`
+
+Do not show `Install/Path/Revision` in the user-facing reply unless explicitly asked.
 
 If install succeeds, immediately return a user-facing snapshot by running:
 1. `bash scripts/health-check.sh` (when env is new/uncertain)
