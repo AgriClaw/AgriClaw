@@ -50,6 +50,9 @@ fi
 
 # -------- Weather with fallback chain --------
 weather=""
+rainp=""   # precipitation probability percentage (0-100)
+tmin=""
+tmax=""
 
 # Primary: wttr.in (very simple human-readable)
 weather_url="https://wttr.in/${location}?format=3"
@@ -68,10 +71,14 @@ if [[ -z "$weather" ]]; then
     forecast_json="$(curl -fsSL --max-time 12 "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=auto" || true)"
 
     if [[ -n "$forecast_json" ]] && echo "$forecast_json" | jq -e '.daily' >/dev/null 2>&1; then
-      tmax="$(echo "$forecast_json" | jq -r '.daily.temperature_2m_max[0] // "n/a"')"
-      tmin="$(echo "$forecast_json" | jq -r '.daily.temperature_2m_min[0] // "n/a"')"
-      rainp="$(echo "$forecast_json" | jq -r '.daily.precipitation_probability_max[0] // "n/a"')"
-      weather="${place}: ${tmin}–${tmax}°C, rain chance ${rainp}% (Open-Meteo)."
+      tmax="$(echo "$forecast_json" | jq -r '.daily.temperature_2m_max[0] // ""')"
+      tmin="$(echo "$forecast_json" | jq -r '.daily.temperature_2m_min[0] // ""')"
+      rainp="$(echo "$forecast_json" | jq -r '.daily.precipitation_probability_max[0] // ""')"
+
+      tmax_show="${tmax:-n/a}"
+      tmin_show="${tmin:-n/a}"
+      rainp_show="${rainp:-n/a}"
+      weather="${place}: ${tmin_show}–${tmax_show}°C, rain chance ${rainp_show}% (Open-Meteo)."
     fi
   fi
 fi
@@ -81,6 +88,7 @@ if [[ -z "$weather" ]]; then
 fi
 
 price_lines=()
+price_value=""
 
 # Optional custom source first
 if [[ -n "$prices_url" ]]; then
@@ -127,10 +135,15 @@ if [[ ${#price_lines[@]} -eq 0 ]]; then
         IFS=',' read -r sym dt tm op hi lo cl vol <<< "$line"
         if [[ -n "${cl:-}" && "$cl" != "N/D" ]]; then
           price_lines=("- ${crop} benchmark (futures): ${cl} USD @ Stooq (${sym}, ${dt})")
+          price_value="$cl"
         fi
       fi
     fi
   fi
+fi
+
+if [[ -z "$price_value" && ${#price_lines[@]} -gt 0 ]]; then
+  price_value="$(echo "${price_lines[0]}" | grep -Eo '[0-9]+(\.[0-9]+)?' | head -n 1 || true)"
 fi
 
 if [[ ${#price_lines[@]} -eq 0 ]]; then
@@ -140,6 +153,51 @@ fi
 # trim to max lines
 price_lines=("${price_lines[@]:0:${max_lines:-5}}")
 
+# -------- Dynamic Pest Diagnosis & Policy --------
+weather_lc="$(echo "$weather" | tr '[:upper:]' '[:lower:]')"
+risk_level="Low"
+pest_diag="Low immediate pest pressure signal from current weather."
+field_policy="Continue routine scouting and maintain normal spray interval."
+
+if [[ "$weather_lc" == *"rain"* || "$weather_lc" == *"drizzle"* || "$weather_lc" == *"storm"* ]]; then
+  risk_level="High"
+  pest_diag="High moisture-driven disease risk (fungal pressure likely)."
+  field_policy="Delay spraying until leaf surface dries; prioritize fungal scouting and preventive fungicide window."
+elif [[ "$weather_lc" == *"fog"* || "$weather_lc" == *"mist"* || "$weather_lc" == *"haze"* || "$weather_lc" == *"🌫"* ]]; then
+  risk_level="Medium"
+  pest_diag="Moderate foliar disease risk from damp canopy and reduced drying."
+  field_policy="Scout lower canopy first; avoid early-morning sprays; spray only on confirmed hotspots."
+fi
+
+if [[ -n "$rainp" && "$rainp" != "n/a" ]]; then
+  rain_int="${rainp%.*}"
+  if [[ "$rain_int" =~ ^[0-9]+$ && "$rain_int" -ge 60 ]]; then
+    risk_level="High"
+    pest_diag="High rain probability suggests elevated disease pressure."
+    field_policy="Prioritize drainage checks and protective disease management before rainfall events."
+  fi
+fi
+
+# Heat stress / pest acceleration add-on
+if [[ -n "$tmax" ]]; then
+  tmax_int="${tmax%.*}"
+  if [[ "$tmax_int" =~ ^[0-9]+$ && "$tmax_int" -ge 30 ]]; then
+    pest_diag="$pest_diag Heat may accelerate sucking pests (aphids/mites)."
+    field_policy="$field_policy Increase edge-row scouting frequency in the afternoon."
+  fi
+fi
+
+trade_policy="Collect at least 2 local buyer quotes before selling."
+if [[ -n "$price_value" ]]; then
+  if awk "BEGIN {exit !($price_value >= 560)}"; then
+    trade_policy="Price is relatively strong vs benchmark bands: consider phased selling (30-50%) and keep the rest for optional upside."
+  elif awk "BEGIN {exit !($price_value >= 500 && $price_value < 560)}"; then
+    trade_policy="Price is mid-range: split sales into 2-3 batches to reduce timing risk."
+  else
+    trade_policy="Price is relatively soft: if storage and cash flow allow, avoid full-volume sale today; monitor 24-72h."
+  fi
+fi
+
 echo "=== AgriClaw Snapshot ==="
 echo "Location: $location"
 echo "Crop: $crop"
@@ -148,10 +206,15 @@ echo "Weather:"
 echo "$weather"
 echo ""
 echo "Prices:"
-printf '%s
-' "${price_lines[@]}"
+printf '%s\n' "${price_lines[@]}"
+echo ""
+echo "Pest Diagnosis & Policy:"
+echo "- Risk: $risk_level"
+echo "- Diagnosis: $pest_diag"
+echo "- Field policy: $field_policy"
+echo "- Trade policy: $trade_policy"
 echo ""
 echo "Action:"
-echo "- If rain risk is high, prioritize drainage and disease checks."
-echo "- If hot/dry, review irrigation schedule and mulch cover."
-echo "- Compare benchmark price with local buyer quote before sale."
+echo "- Prioritize today’s field task by risk level before routine work."
+echo "- Re-check weather and one local price quote before end of day."
+echo "- Keep notes (disease spots, buyer quotes) for tomorrow’s decision."

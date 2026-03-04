@@ -40,6 +40,7 @@ If install succeeds, immediately return a user-facing snapshot by running:
 Snapshot must include:
 - weather summary
 - top crop price lines
+- Pest Diagnosis & Policy (risk-aware, based on weather + price)
 - practical action hints
 
 If platform requires a new session to reload skills, state it.
