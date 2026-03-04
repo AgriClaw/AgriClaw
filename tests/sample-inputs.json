@@ -1,0 +1,12 @@
+[
+  {
+    "location": "Leeds",
+    "crop": "wheat",
+    "prices_url": ""
+  },
+  {
+    "location": "Nairobi",
+    "crop": "maize",
+    "prices_url": "https://example.com/prices.json"
+  }
+]

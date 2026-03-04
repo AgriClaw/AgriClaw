@@ -1,0 +1,8 @@
+{
+  "default_location": "Leeds",
+  "default_crop": "wheat",
+  "default_prices_url": "",
+  "request_timeout_seconds": 12,
+  "max_price_lines": 5,
+  "currency_hint": "local"
+}
