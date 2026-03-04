@@ -9,7 +9,9 @@ AgriClaw is an OpenClaw-ready project that helps farmers quickly get:
 ## Features
 
 - **Weather** via `wttr.in` (no API key required)
-- **Crop prices** via configurable HTTP source (JSON/CSV/plain text fallback)
+- **Crop prices** via:
+  - configurable HTTP source (JSON/CSV/plain text fallback), or
+  - built-in global benchmark adapter (Stooq futures, no API key)
 - **Provider/model switch** with whitelist validation and backup
 - **Health check** for environment readiness
 
@@ -28,6 +30,7 @@ bash install/verify.sh
 ```bash
 bash scripts/recommend.sh --location "Leeds" --crop wheat
 bash scripts/recommend.sh --location "Nairobi" --crop maize --prices-url "https://example.com/prices.json"
+# without --prices-url, script tries built-in benchmark feed for major crops (wheat/maize/soybean/oats/rice)
 ```
 
 ### 2) Switch model/provider safely
@@ -58,6 +61,20 @@ bash scripts/health-check.sh
 - `config/providers.json` — Allowed providers/models
 - `install/*` — Install + verify helpers
 - `tests/*` — Sample request payloads
+
+## Distributable Skill Package
+
+Packaged skill artifact:
+
+- `dist/agriclaw.skill`
+
+You can rebuild it with:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install pyyaml
+.venv/bin/python ../openclaw/skills/skill-creator/scripts/package_skill.py ./skill/agriclaw ./dist
+```
 
 ## Notes
 
