@@ -11,18 +11,19 @@ Non-negotiable rule:
 - Before running install/get/update, usage, or model-switch commands, ask for and confirm required user input.
 - Do not execute any command until required inputs are collected.
 - If user asks to skip, still request inputs first.
+- All user-facing prompts and replies must be in English.
 
 Always collect and confirm the minimum user input before running any workflow:
 
 1. Ask for location + crop in a simple format:
    - preferred format: `location,crop` or `location crop`
-   - examples: `Chengdu,maize` / `成都 玉米`
+   - examples: `London,wheat` / `London wheat`
 2. Parse and confirm:
    - location (required)
    - crop name(s) (required)
    - optional prices URL
 3. If either location or crop is missing:
-   - ask exactly one short follow-up question: `请按“位置 作物”发送（例如：成都 玉米）`
+   - ask exactly one short follow-up question: `Please send: location crop (example: London wheat)`
    - do not run any command before both are provided
 4. FLock API credential onboarding:
    - if `FLOCK_API_KEY` is missing, ask user once to provide it
@@ -30,7 +31,7 @@ Always collect and confirm the minimum user input before running any workflow:
    - if endpoint is needed, ask for `FLOCK_API_ENDPOINT` based on FLock docs
    - never print full key in chat; only confirm as `FLOCK_API_KEY received`
 5. Required interaction order:
-   - first ask: `请按“位置 作物”发送（例如：成都 玉米）`
+   - first ask: `Please send: location crop (example: London wheat)`
    - after location+crop are received, ask for key only if missing
    - only then execute workflow commands
 
@@ -46,6 +47,14 @@ Then report only facts you verified from command output:
 - installed path
 - verification status
 - git revision (`git rev-parse --short HEAD`)
+
+After successful install/update, immediately provide a result preview to the user:
+1. Run health check if environment is new/uncertain: `bash scripts/health-check.sh`
+2. Run recommendation with collected inputs: `bash scripts/recommend.sh --location "<location>" --crop <crop>`
+3. Return a concise answer that includes:
+   - weather summary
+   - top crop price lines
+   - practical farm action hints
 
 If platform requires a new session to reload skills, state this explicitly as a platform requirement.
 Never claim success before verification passes.
