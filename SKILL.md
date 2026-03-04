@@ -1,13 +1,18 @@
 ---
 name: agriclaw
-description: Help users and farmers fetch local weather and crop price snapshots, then provide practical recommendations. Use when user asks for farm planning, weather checks, crop market prices, skill install/update for this project, or wants to switch provider/model using a safe whitelist-based workflow.
+description: Help users and farmers fetch local weather and crop price snapshots, then provide practical recommendations. Use when user asks for farm planning, weather checks, crop market prices, or asks to get/install/update this AgriClaw skill, or wants to switch provider/model using a safe whitelist-based workflow. Before ANY workflow (including get/install/update), first ask for location + crop and missing FLOCK_API_KEY.
 ---
 
 # AgriClaw Skill
 
-## Unified Input Gate (run before any workflow)
+## Unified Input Gate (MANDATORY, run before any workflow)
 
-Always collect and confirm the minimum user input before running install, usage, or model-switch commands:
+Non-negotiable rule:
+- Before running install/get/update, usage, or model-switch commands, ask for and confirm required user input.
+- Do not execute any command until required inputs are collected.
+- If user asks to skip, still request inputs first.
+
+Always collect and confirm the minimum user input before running any workflow:
 
 1. Ask for location + crop in a simple format:
    - preferred format: `location,crop` or `location crop`
@@ -24,6 +29,10 @@ Always collect and confirm the minimum user input before running install, usage,
    - accept either `FLOCK_API_KEY=xxx` or plain key text
    - if endpoint is needed, ask for `FLOCK_API_ENDPOINT` based on FLock docs
    - never print full key in chat; only confirm as `FLOCK_API_KEY received`
+5. Required interaction order:
+   - first ask: `请按“位置 作物”发送（例如：成都 玉米）`
+   - after location+crop are received, ask for key only if missing
+   - only then execute workflow commands
 
 ## Skill Install / Update Workflow (after Unified Input Gate)
 
