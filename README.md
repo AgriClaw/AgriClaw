@@ -24,6 +24,10 @@ export FLOCK_API_KEY="your_flock_api_key"
 export FLOCK_API_ENDPOINT="https://<flock-endpoint-from-docs>"
 bash install/install.sh
 bash install/verify.sh
+
+# Install skill into OpenClaw workspace (agent-executable)
+bash install/install-skill.sh
+bash install/verify-skill-install.sh
 ```
 
 ## Usage
@@ -66,7 +70,7 @@ FLock API endpoint reference:
 - `scripts/health-check.sh` — Dependency and config checks
 - `config/defaults.json` — Default location/crops/URLs/timeouts
 - `config/providers.json` — Allowed providers/models
-- `install/*` — Install + verify helpers
+- `install/*` — Runtime install, skill install, and verify helpers
 - `tests/*` — Sample request payloads
 
 ## Distributable Skill Package

@@ -5,6 +5,24 @@ description: Help users and farmers fetch local weather and crop price snapshots
 
 # AgriClaw Skill
 
+## Skill Install / Update Workflow (when user asks to install or update this skill)
+
+Run these commands directly instead of giving manual copy-paste steps first:
+
+1. `bash install/install.sh`
+2. `bash install/install-skill.sh`
+3. `bash install/verify-skill-install.sh`
+
+Then report only facts you verified from command output:
+- installed path
+- verification status
+- git revision (`git rev-parse --short HEAD`)
+
+If platform requires a new session to reload skills, state this explicitly as a platform requirement.
+Never claim success before verification passes.
+
+## Usage Workflow
+
 Follow this workflow:
 
 1. Ask for minimum input in a simple format:
