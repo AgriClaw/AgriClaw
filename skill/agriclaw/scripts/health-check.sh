@@ -29,6 +29,19 @@ for f in "$ROOT_DIR/config/defaults.json" "$ROOT_DIR/config/providers.json" "$RO
   fi
 done
 
+echo "\nChecking FLock settings..."
+if [[ -n "${FLOCK_API_KEY:-}" ]]; then
+  echo "[OK] FLOCK_API_KEY is set"
+else
+  echo "[WARN] FLOCK_API_KEY is not set (required for FLock API calls)"
+fi
+
+if [[ -n "${FLOCK_API_ENDPOINT:-}" ]]; then
+  echo "[OK] FLOCK_API_ENDPOINT is set: $FLOCK_API_ENDPOINT"
+else
+  echo "[WARN] FLOCK_API_ENDPOINT is not set (use FLock docs endpoint if your flow needs it)"
+fi
+
 if [[ "$ok" -eq 1 ]]; then
   echo "\nHealth check PASSED"
   exit 0

@@ -7,19 +7,30 @@ description: Help users and farmers fetch local weather and crop price snapshots
 
 Follow this workflow:
 
-1. Collect input requirements:
+1. Ask for minimum input in a simple format:
+   - preferred user format: `location,crop` or `location crop`
+   - examples: `Chengdu,maize` / `成都 玉米`
+2. Parse and confirm:
    - location (required)
-   - crop name(s) (optional, defaults allowed)
+   - crop name(s) (required)
    - optional prices URL
-2. Run health check first when environment is new or uncertain:
+3. If either location or crop is missing:
+   - ask exactly one short follow-up question: `请按“位置 作物”发送（例如：成都 玉米）`
+   - do not run any command before both are provided
+4. FLock API credential onboarding:
+   - if `FLOCK_API_KEY` is missing, ask user once to provide it
+   - accept either `FLOCK_API_KEY=xxx` or plain key text
+   - if endpoint is needed, ask for `FLOCK_API_ENDPOINT` based on FLock docs
+   - never print full key in chat; only confirm as `FLOCK_API_KEY received`
+5. Run health check first when environment is new or uncertain:
    - `bash scripts/health-check.sh`
-3. Fetch weather + prices:
+6. Fetch weather + prices:
    - `bash scripts/recommend.sh --location "<location>" --crop <crop>`
-4. Return concise result with:
+7. Return concise result with:
    - weather summary
    - top price lines
    - practical farm action hints
-5. If user asks about source reliability/coverage, read `references/data-sources.md` and clarify benchmark vs local prices.
+8. If user asks about source reliability/coverage, read `references/data-sources.md` and clarify benchmark vs local prices.
 
 ## Model Switch Workflow
 

@@ -19,6 +19,9 @@ AgriClaw is an OpenClaw-ready project that helps farmers quickly get:
 
 ```bash
 cd AgriClaw
+export FLOCK_API_KEY="your_flock_api_key"
+# Optional: set endpoint from FLock API docs if your flow needs it
+export FLOCK_API_ENDPOINT="https://<flock-endpoint-from-docs>"
 bash install/install.sh
 bash install/verify.sh
 ```
@@ -31,6 +34,7 @@ bash install/verify.sh
 bash scripts/recommend.sh --location "Leeds" --crop wheat
 bash scripts/recommend.sh --location "Nairobi" --crop maize --prices-url "https://example.com/prices.json"
 # without --prices-url, script tries built-in benchmark feed for major crops (wheat/maize/soybean/oats/rice)
+# location and crop must be explicitly provided (or set in config/defaults.json)
 ```
 
 ### 2) Switch model/provider safely
@@ -50,6 +54,9 @@ bash scripts/switch-model.sh --provider openai --model gpt-5.3-codex --target /p
 ```bash
 bash scripts/health-check.sh
 ```
+
+FLock API endpoint reference:
+- https://docs.flock.io/flock-products/api-platform/api-endpoint
 
 ## Project Layout
 

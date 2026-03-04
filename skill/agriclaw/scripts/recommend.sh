@@ -25,11 +25,11 @@ done
 
 if [[ -f "$DEFAULTS" ]]; then
   default_location="$(jq -r '.default_location // ""' "$DEFAULTS")"
-  default_crop="$(jq -r '.default_crop // "wheat"' "$DEFAULTS")"
+  default_crop="$(jq -r '.default_crop // ""' "$DEFAULTS")"
   max_lines="$(jq -r '.max_price_lines // 5' "$DEFAULTS")"
 else
   default_location=""
-  default_crop="wheat"
+  default_crop=""
   max_lines=5
 fi
 
@@ -37,7 +37,14 @@ location="${location:-$default_location}"
 crop="${crop:-$default_crop}"
 
 if [[ -z "$location" ]]; then
-  echo "ERROR: --location required (or set default_location in config/defaults.json)"
+  echo "ERROR: --location is required."
+  echo "Example: bash scripts/recommend.sh --location \"Chengdu\" --crop maize"
+  exit 1
+fi
+
+if [[ -z "$crop" ]]; then
+  echo "ERROR: --crop is required."
+  echo "Example: bash scripts/recommend.sh --location \"Chengdu\" --crop maize"
   exit 1
 fi
 

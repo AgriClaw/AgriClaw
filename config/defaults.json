@@ -1,6 +1,6 @@
 {
-  "default_location": "Leeds",
-  "default_crop": "wheat",
+  "default_location": "",
+  "default_crop": "",
   "default_prices_url": "",
   "request_timeout_seconds": 12,
   "max_price_lines": 5,
