@@ -204,23 +204,23 @@ if [[ -n "$price_value" ]]; then
 fi
 
 # -------- Print Snapshot --------
-echo "=== AgriClaw Snapshot ==="
-echo "Location: $location"
-echo "Crop: $crop"
+echo "🌾 AgriClaw Snapshot"
+echo "📍 Location: $location"
+echo "🌱 Crop: $crop"
 echo ""
-echo "Weather:"
+echo "🌦 Weather"
 echo "$weather"
 echo ""
-echo "Prices:"
+echo "💹 Prices"
 printf '%s\n' "${price_lines[@]}"
 echo ""
-echo "Pest Diagnosis & Policy:"
+echo "🦠 Pest Diagnosis & Policy"
 echo "- Risk: $risk_level"
 echo "- Diagnosis: $pest_diag"
 echo "- Field policy: $field_policy"
 echo "- Trade policy: $trade_policy"
 echo ""
-echo "Action:"
+echo "✅ Recommended Actions"
 echo "- Prioritize today's field task by risk level before routine work."
 echo "- Re-check weather and one local price quote before end of day."
 echo "- Keep notes (disease spots, buyer quotes) for tomorrow's decision."
@@ -232,7 +232,7 @@ FLOCK_MODEL="${FLOCK_MODEL:-qwen3-30b-a3b-instruct-2507}"
 
 if [[ -z "$FLOCK_API_KEY" ]]; then
   echo ""
-  echo "=== AI Recommendation ==="
+  echo "🤖 AI Recommendation (Flock.io)"
   echo "(Skipped: FLOCK_API_KEY is not set. Export it to enable AI advice.)"
   exit 0
 fi
@@ -269,7 +269,7 @@ request_body="{
 }"
 
 echo ""
-echo "=== AI Recommendation (Flock.io / ${FLOCK_MODEL}) ==="
+echo "🤖 AI Recommendation (Flock.io / ${FLOCK_MODEL})"
 
 ai_response="$(curl -fsSL --max-time 30 \
   -X POST "${FLOCK_API_ENDPOINT}/chat/completions" \

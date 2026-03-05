@@ -114,18 +114,18 @@ fi
 # trim to max lines
 price_lines=("${price_lines[@]:0:${max_lines:-5}}")
 
-echo "=== AgriClaw Snapshot ==="
-echo "Location: $location"
-echo "Crop: $crop"
+echo "🌾 AgriClaw Snapshot"
+echo "📍 Location: $location"
+echo "🌱 Crop: $crop"
 echo ""
-echo "Weather:"
+echo "🌦 Weather"
 echo "$weather"
 echo ""
-echo "Prices:"
+echo "💹 Prices"
 printf '%s
 ' "${price_lines[@]}"
 echo ""
-echo "Practical Hints:"
+echo "✅ Recommended Actions"
 echo "- If rain is likely, prioritize drainage and disease checks."
-echo "- If hot/dry, review irrigation schedule and mulch cover."
-echo "- Compare today price with your local buyer before harvest sale."
+echo "- If conditions turn hot or dry, review irrigation timing and mulch cover."
+echo "- Compare today's benchmark with your local buyer before marketing grain."

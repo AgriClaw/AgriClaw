@@ -29,7 +29,7 @@ When user asks to get/install/update the skill, run:
 3. `bash install/verify-skill-install.sh`
 
 Then return a prominent welcome line instead of install metadata:
-- `Welcome to 🌾 AgriClaw, powered by Flock.io`
+- `🌾 AgriClaw is ready, powered by Flock.io`
 
 Do not show `Install/Path/Revision` in the user-facing reply unless explicitly asked.
 
@@ -38,10 +38,12 @@ If install succeeds, immediately return a user-facing snapshot by running:
 2. `bash scripts/recommend.sh --location "<location>" --crop <crop>`
 
 Snapshot must include:
-- weather summary
-- top crop price lines
-- Pest Diagnosis & Policy (risk-aware, based on weather + price)
-- practical action hints
+- a short status line when useful
+- `🌦 Weather`
+- `💹 Prices`
+- `🦠 Pest Diagnosis & Policy` (risk-aware, based on weather + price)
+- `✅ Recommended Actions`
+- `ℹ️ Heads-up` only when there is a meaningful warning or missing optional config
 
 If platform requires a new session to reload skills, state it.
 Never claim success before verification passes.
@@ -51,9 +53,11 @@ Never claim success before verification passes.
 1. `bash scripts/health-check.sh` (when env is new/uncertain)
 2. `bash scripts/recommend.sh --location "<location>" --crop <crop>`
 3. Return concise output in this format:
-   - `Weather:` <1–2 lines>
-   - `Prices:` 1–3 bullet lines
-   - `Action:` 2–3 bullet hints
+   - `🌦 Weather` <1–2 lines>
+   - `💹 Prices` 1–3 bullet lines
+   - `🦠 Pest Diagnosis & Policy` 2–4 bullet lines
+   - `✅ Recommended Actions` 2–3 bullet hints
+   - `ℹ️ Heads-up` only when there is a useful warning or missing optional config
 
 ## Model Switch Workflow (after Mandatory Input Gate)
 
@@ -65,4 +69,5 @@ Never claim success before verification passes.
 
 - Never bypass whitelist in `config/providers.json`.
 - Show validation errors clearly if provider/model is not allowed.
-- Keep field-use output short and practical.
+- Keep field-use output short, practical, and user-friendly.
+- Use a few clear emojis/icons in headings only; avoid decorative icons on every bullet.
