@@ -1,8 +1,22 @@
 {
   "providers": {
-    "openai": ["gpt-5.3-codex", "gpt-5.1"],
-    "anthropic": ["claude-3-7-sonnet", "claude-3-5-sonnet"],
-    "google": ["gemini-2.5-pro", "gemini-2.5-flash"],
-    "openrouter": ["openai/gpt-5", "anthropic/claude-3.7-sonnet", "google/gemini-2.5-pro"]
+    "openai": [
+      "gpt-5.3-codex",
+      "gpt-5.1",
+      "gpt-5-nano"
+    ],
+    "anthropic": [
+      "claude-3-7-sonnet",
+      "claude-3-5-sonnet"
+    ],
+    "google": [
+      "gemini-2.5-pro",
+      "gemini-2.5-flash"
+    ],
+    "openrouter": [
+      "openai/gpt-5",
+      "anthropic/claude-3.7-sonnet",
+      "google/gemini-2.5-pro"
+    ]
   }
 }
