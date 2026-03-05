@@ -22,7 +22,7 @@ AgriClaw is an OpenClaw-ready project that helps farmers quickly get:
 ```bash
 cd AgriClaw
 export FLOCK_API_KEY="your_flock_api_key"          # required for AI recommendation
-export FLOCK_MODEL="gemini-3-flash-preview"        # optional, this is the default
+export FLOCK_MODEL="gemini-3-pro-preview"          # optional, this is the default
 export FLOCK_API_ENDPOINT="https://api.flock.io/v1" # optional, this is the default
 bash install/install.sh
 bash install/verify.sh

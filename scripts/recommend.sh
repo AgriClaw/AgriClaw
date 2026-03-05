@@ -20,7 +20,7 @@ Usage: recommend.sh --location <city> [--crop <name>] [--prices-url <url>]
 Environment:
   FLOCK_API_KEY      Your Flock.io API key (required for AI recommendation)
   FLOCK_API_ENDPOINT Flock.io base URL (default: https://api.flock.io/v1)
-  FLOCK_MODEL        Model to use (default: gemini-3-flash-preview)
+  FLOCK_MODEL        Model to use (default: gemini-3-pro-preview)
 EOF
       exit 0
       ;;
@@ -228,7 +228,7 @@ echo "- Keep notes (disease spots, buyer quotes) for tomorrow's decision."
 # -------- Flock.io AI Recommendation --------
 FLOCK_API_KEY="${FLOCK_API_KEY:-}"
 FLOCK_API_ENDPOINT="${FLOCK_API_ENDPOINT:-https://api.flock.io/v1}"
-FLOCK_MODEL="${FLOCK_MODEL:-gemini-3-flash-preview}"
+FLOCK_MODEL="${FLOCK_MODEL:-gemini-3-pro-preview}"
 
 if [[ -z "$FLOCK_API_KEY" ]]; then
   echo ""
