@@ -16,6 +16,11 @@ while [[ $# -gt 0 ]]; do
     -h|--help)
       cat <<EOF
 Usage: recommend.sh --location <city> [--crop <name>] [--prices-url <url>]
+
+Environment:
+  FLOCK_API_KEY      Your Flock.io API key (required for AI recommendation)
+  FLOCK_API_ENDPOINT Flock.io base URL (default: https://api.flock.io/v1)
+  FLOCK_MODEL        Model to use (default: qwen3-30b-a3b-instruct-2507)
 EOF
       exit 0
       ;;
@@ -198,6 +203,7 @@ if [[ -n "$price_value" ]]; then
   fi
 fi
 
+# -------- Print Snapshot --------
 echo "=== AgriClaw Snapshot ==="
 echo "Location: $location"
 echo "Crop: $crop"
@@ -215,6 +221,77 @@ echo "- Field policy: $field_policy"
 echo "- Trade policy: $trade_policy"
 echo ""
 echo "Action:"
-echo "- Prioritize today’s field task by risk level before routine work."
+echo "- Prioritize today's field task by risk level before routine work."
 echo "- Re-check weather and one local price quote before end of day."
-echo "- Keep notes (disease spots, buyer quotes) for tomorrow’s decision."
+echo "- Keep notes (disease spots, buyer quotes) for tomorrow's decision."
+
+# -------- Flock.io AI Recommendation --------
+FLOCK_API_KEY="${FLOCK_API_KEY:-}"
+FLOCK_API_ENDPOINT="${FLOCK_API_ENDPOINT:-https://api.flock.io/v1}"
+FLOCK_MODEL="${FLOCK_MODEL:-qwen3-30b-a3b-instruct-2507}"
+
+if [[ -z "$FLOCK_API_KEY" ]]; then
+  echo ""
+  echo "=== AI Recommendation ==="
+  echo "(Skipped: FLOCK_API_KEY is not set. Export it to enable AI advice.)"
+  exit 0
+fi
+
+# Build a concise context string for the LLM
+price_summary="$(printf '%s\n' "${price_lines[@]}")"
+
+ai_context="You are AgriClaw, a practical agricultural advisor.
+A farmer in ${location} is growing ${crop}.
+
+Current conditions:
+- Weather: ${weather}
+- Market prices:
+${price_summary}
+- Pest risk level: ${risk_level}
+- Pest/disease diagnosis: ${pest_diag}
+- Field policy: ${field_policy}
+- Trade policy: ${trade_policy}
+
+Give the farmer 3–5 concrete, prioritised action recommendations for today.
+Be concise, practical, and field-ready. Use bullet points.
+End with one sentence on what to watch for tomorrow."
+
+# Escape for JSON
+user_content="$(printf '%s' "$ai_context" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')"
+
+request_body="{
+  \"model\": \"${FLOCK_MODEL}\",
+  \"stream\": false,
+  \"messages\": [
+    {\"role\": \"system\", \"content\": \"You are AgriClaw, a concise and practical AI agricultural advisor. Respond in plain text with bullet points only — no markdown headers.\"},
+    {\"role\": \"user\", \"content\": ${user_content}}
+  ]
+}"
+
+echo ""
+echo "=== AI Recommendation (Flock.io / ${FLOCK_MODEL}) ==="
+
+ai_response="$(curl -fsSL --max-time 30 \
+  -X POST "${FLOCK_API_ENDPOINT}/chat/completions" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "x-litellm-api-key: ${FLOCK_API_KEY}" \
+  -d "$request_body" 2>/dev/null || true)"
+
+if [[ -z "$ai_response" ]]; then
+  echo "(Flock.io API call failed or timed out. Check FLOCK_API_KEY and network.)"
+  exit 0
+fi
+
+# Extract the assistant message content
+ai_text="$(echo "$ai_response" | jq -r '
+  if .choices then
+    (.choices[0].message.content // .choices[0].delta.content // "")
+  elif .error then
+    "API error: " + (.error.message // .error | tostring)
+  else
+    "Unexpected response format."
+  end
+' 2>/dev/null || echo "(Failed to parse Flock.io response.)")"
+
+echo "$ai_text"

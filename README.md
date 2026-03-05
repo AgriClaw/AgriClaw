@@ -4,7 +4,8 @@ AgriClaw is an OpenClaw-ready project that helps farmers quickly get:
 
 1. Weather information for a location
 2. Crop price snapshots
-3. Safe model/provider switching (whitelist-based)
+3. **AI-powered recommendations** via Flock.io (3–5 prioritised today actions)
+4. Safe model/provider switching (whitelist-based)
 
 ## Features
 
@@ -12,6 +13,7 @@ AgriClaw is an OpenClaw-ready project that helps farmers quickly get:
 - **Crop prices** via:
   - configurable HTTP source (JSON/CSV/plain text fallback), or
   - built-in global benchmark adapter (Stooq futures, no API key)
+- **AI Recommendation** via [Flock.io API](https://docs.flock.io/flock-products/api-platform/api-endpoint) — sends weather, price and pest context and returns 3–5 prioritised field actions
 - **Provider/model switch** with whitelist validation and backup
 - **Health check** for environment readiness
 
@@ -19,9 +21,9 @@ AgriClaw is an OpenClaw-ready project that helps farmers quickly get:
 
 ```bash
 cd AgriClaw
-export FLOCK_API_KEY="your_flock_api_key"
-# Optional: set endpoint from FLock API docs if your flow needs it
-export FLOCK_API_ENDPOINT="https://<flock-endpoint-from-docs>"
+export FLOCK_API_KEY="your_flock_api_key"          # required for AI recommendation
+export FLOCK_MODEL="qwen3-30b-a3b-instruct-2507"   # optional, this is the default
+export FLOCK_API_ENDPOINT="https://api.flock.io/v1" # optional, this is the default
 bash install/install.sh
 bash install/verify.sh
 
